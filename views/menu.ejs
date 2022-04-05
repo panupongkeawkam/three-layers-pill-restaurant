@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header') %>
+
+  <body>
+    <div id="app" class="container bg-light" ref="container">
+      <div class="row bg-light shadow-sm py-3 position-sticky" style="z-index: 1;">
+        <div class="col-12 pb-3">
+          <h1 class="fw-bold">Menus</h1>
+        </div>
+        <div class="col-12 d-flex">
+          <input class="form-control border rounded px-3" style="border-radius: .25em 0 0 .25em !important" type="text"
+            placeholder="Search">
+          <button class="btn border border-start-0 rounded text-muted px-4 bg-light clickable"
+            style="border-radius: 0 .25em .25em 0 !important" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+          <div class="d-flex justify-content-center align-items-center ms-3 mx-2">
+            <i class="fas fa-home text-muted clickable me-3" style="font-size: 1.5em"
+              onclick="window.location.href = '/home'"></i>
+            <i class="fas fa-clipboard-check text-muted position-relative clickable" style="font-size: 1.5em"
+              onclick="window.location.href = '/order-list'">
+              <span class="number-notification">9</span>
+            </i>
+          </div>
+        </div>
+      </div>
+      <div class="row py-3 px-2 border-bottom" v-for="i in 10">
+        <div class="col-8">
+          <span>Casseroled prawns/shrimps with glass noodles</span>
+        </div>
+        <div class="col-2 fw-bold">
+          <span>95.00฿</span>
+        </div>
+        <div class="col-2 d-flex justify-content-end align-items-center">
+          <i class="fas fa-plus-circle clickable" style="font-size: 1.5em; color: #87d53f"></i>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        tableNo: `<%- tableNo %>`
+      },
+      mounted() {
+        this.$refs.container.style.minHeight = window.outerHeight + 'px'
+        var height = this.$refs.container.children[0].children[0].clientHeight
+        this.$refs.container.children[0].style.top = -1 * height + 'px'
+
+        window.onresize = (event) => {
+          this.$refs.container.style.minHeight = window.innerHeight + 'px'
+        }
+      }
+    })
+  </script>
+
+</html>

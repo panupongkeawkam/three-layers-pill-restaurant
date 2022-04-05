@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header') %>
+
+  <body>
+    <div id="app" class="container bg-light d-flex flex-column justify-content-between" ref="container">
+      <section ref="sectionTop">
+        <div class="row shadow-sm py-3 bg-light position-sticky" style="z-index: 1">
+          <div class="col-12 pb-3">
+            <h1 class="fw-bold">Order List</h1>
+          </div>
+          <div class="col-12 d-flex align-items-center clickable" onclick="window.location.href = '/menu'">
+            <i class="fas fa-angle-left text-muted"></i>
+            <span class="ms-2 text-muted">Menu</span>
+          </div>
+        </div>
+
+        <div class="row py-3 border-bottom px-2" v-for="i in 11">
+          <div class="col-8 d-flex flex-column">
+            <span>Casseroled prawns/shrimps with glass noodles</span>
+            <span class="fw-bold mt-1">$95.00</span>
+          </div>
+          <div class="col-4 d-flex justify-content-end align-items-center">
+            <i class="fas fa-minus-circle clickable" style="font-size: 1.5em; color: #a6adac;"></i>
+            <span class="fw-3 fw-bold px-2">1</span>
+            <i class="fas fa-plus-circle clickable" style="font-size: 1.5em; color: #a6adac;"></i>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="row bg-light py-3 bottom-0 position-sticky shadow rounded-3-top">
+        <div class="col-12 d-flex justify-content-between mb-4">
+          <span class="fw-bold text-muted">SUBTOTAL:</span>
+          <span class="fw-bold">$1750.00</span>
+        </div>
+        <div class="col-12 mb-2">
+          <a class="btn text-light w-100 py-3 fw-bold" style="background: #de132a">RESET</a>
+        </div>
+        <div class="col-12">
+          <a class="btn btn-outline-dark w-100 py-3 fw-bold" href="/waiting">CONFIRM</a>
+        </div>
+      </section>
+
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+
+      },
+      mounted() {
+        this.$refs.container.style.minHeight = window.outerHeight + 'px'
+        var height = this.$refs.sectionTop.children[0].children[0].clientHeight
+        this.$refs.sectionTop.children[0].style.top = -1 * height + 'px'
+
+        window.onresize = (event) => {
+          this.$refs.container.style.minHeight = window.innerHeight + 'px'
+        }
+      }
+    })
+  </script>
+
+</html>

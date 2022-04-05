@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header') %>
+
+  <body>
+    <div id="app" class="container bg-light" ref="container">
+      <div class="row text-center mb-5 pt-5 d-flex flex-column align-items-center g-3">
+        <img src="icon/three-layers-pill.png" style="width: 120px">
+        <h1 class="fs-1 fw-bold mb-2">Three Layers Pill</h1>
+        <p class="text-muted">Thai restaurant with greatness raw material import directly from Thailand, taste like
+          thai,
+          smile
+          like bangkok.</p>
+      </div>
+      <div class="row d-flex justify-content-center px-2">
+        <div class="col-xxl-6 col-12">
+          <a href="/menu" class="btn btn-outline-dark py-3 fw-bold w-100" type="button">GUEST
+            CUSTOMER</a>
+          <div class="d-flex mb-3 mt-4">
+            <hr style="width: 100%">
+            <span class="text-center text-muted px-3" style="width: auto; font-size: .75em; white-space: nowrap;">OR
+              BENEFIT WITH</span>
+            <hr style="width: 100%">
+          </div>
+          <button class="btn py-3 text-light fw-bold w-100" style="background: #f8be31"
+            :style="{borderRadius: memberLogin ? '.25em .25em 0 0' : '.25em'}" type="button"
+            @click="memberLogin = !memberLogin; scrollDown()">MEMBER CUSTOMER</button>
+          <form class="p-3 border border-top-0 rounded-bottom mb-3" :class="{'animation': memberLogin}"
+            v-if="memberLogin" action="/menu" method="POST" style="font-size: .8em">
+            <div class="mb-3">
+              <label class="form-label text-muted">Username</label>
+              <input type="text" class="form-control border border-danger" name="username" v-model="username">
+              <div class="form-text text-danger">*We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-muted">Password</label>
+              <input type="password" class="form-control" name="password" v-model="password">
+            </div>
+            <button type="submit" class="btn btn-light border fw-bold text-muted">SUBMIT</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        username: '',
+        password: '',
+        memberLogin: false,
+      },
+      methods: {
+        scrollDown() {
+          setTimeout(() => {
+            window.scrollTo(0, 2000)
+          }, 300)
+        }
+      },
+      mounted() {
+        this.$refs.container.style.minHeight = window.innerHeight + 'px'
+
+        window.onresize = (event) => {
+          this.$refs.container.style.minHeight = window.innerHeight + 'px'
+        }
+      }
+    })
+  </script>
+
+</html>

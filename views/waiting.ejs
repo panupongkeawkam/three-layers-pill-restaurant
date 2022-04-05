@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/pan-flip.css">
+  <link rel="icon" type="image/x-icon" href="icon/three-layers-pill.png">
+  <title>Three Layers Pill | Restaurant</title>
+</head>
+
+<body>
+  <div id="app" class="container" ref="container">
+    <a style="position: absolute; top: 20%" href="/served">GO TO SERVED PAGE</a>
+    <a style="position: absolute; top: 10%" href="/order-list">BACK TO ORDER LIST PAGE</a>
+    <div class="pan-loader">
+      <div class="loader"></div>
+      <div class="pan-container">
+        <div class="pan"></div>
+        <div class="handle"></div>
+      </div>
+      <div class="pan-shadow"></div>
+    </div>
+    <span class="text">Waiting for cooking{{ dot }}</span>
+  </div>
+</body>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      dot: ''
+    },
+    methods: {
+      dotAnimation() {
+        setInterval(() => {
+          if (this.dot.length === 3) {
+            this.dot = ''
+            return
+          }
+          this.dot += '.'
+        }, 500)
+      }
+    },
+    mounted() {
+      this.$refs.container.style.height = window.outerHeight + 'px'
+      this.dotAnimation()
+
+      window.onresize = (event) => {
+        this.$refs.container.style.height = window.innerHeight + 'px'
+      }
+    }
+  })
+</script>
+
+</html>

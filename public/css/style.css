@@ -1,0 +1,57 @@
+body {
+  font-family: 'Inter', sans-serif;
+  scroll-behavior: smooth;
+  /* background: hsl(0, 0%, 90%); */
+}
+
+.animation {
+  transform-origin: top;
+  animation: slide-down .3s;
+}
+
+.clickable:hover {
+  cursor: pointer;
+}
+
+.clickable:active {
+  opacity: .5;
+}
+
+.number-notification {
+  position: absolute;
+  font-size: 10px;
+  background: #de132a;
+  color: white;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  top: -30%;
+  right: -80%;
+}
+
+.btn.focus, .btn:focus, .form-control.focus, .form-control:focus {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.btn.active, .btn:active {
+  opacity: .9;
+}
+
+.btn.hover, .btn:hover {
+  transform: scale(1.01);
+  transition: .3s;
+}
+
+@keyframes slide-down {
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}

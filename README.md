@@ -1,1 +1,7 @@
-# three-layers-pill-restaurant
+# เว็บสั่งสำหรับมือถือ
+
+[ลิงค์สำหรับโต๊ะ 1](http://localhost:3000/?no=1)
+[ลิงค์สำหรับโต๊ะ 2](http://localhost:3000/?no=3)
+[ลิงค์สำหรับโต๊ะ 3](http://localhost:3000/?no=5)
+
+### เมื่อเข้าหน้าเว็บแล้วกด F12 เลือก responsive เป็นมือถือ (iPhone SE, iPhone XR, iPhone 12 Pro) เพื่อมุมมองแบบเต็มประสิทธิภาพ
