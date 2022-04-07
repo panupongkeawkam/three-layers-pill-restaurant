@@ -6,13 +6,13 @@
   <body>
     <div id="app" class="container bg-light d-flex flex-column justify-content-between" ref="container">
       <section ref="sectionTop">
-        <div class="row shadow-sm py-3 bg-light position-sticky" style="z-index: 1">
+        <div class="row shadow-sm py-3 position-sticky" style="z-index: 1; background: #991728">
           <div class="col-12 pb-3">
-            <h1 class="fw-bold">Order List</h1>
+            <h1 class="fw-bold text-light">Order List</h1>
           </div>
           <div class="col-12 d-flex align-items-center clickable" onclick="window.location.href = '/menu'">
-            <i class="fas fa-angle-left text-muted"></i>
-            <span class="ms-2 text-muted">Menu</span>
+            <i class="fas fa-angle-left" style="color: #eee"></i>
+            <span class="ms-2" style="color: #eee">Menu</span>
           </div>
         </div>
 
@@ -36,7 +36,7 @@
           <span class="fw-bold">$1750.00</span>
         </div>
         <div class="col-12 mb-2">
-          <a class="btn text-light w-100 py-3 fw-bold" style="background: #de132a">RESET</a>
+          <a class="btn text-light w-100 py-3 fw-bold" style="background: #ffa723">RESET</a>
         </div>
         <div class="col-12">
           <a class="btn btn-outline-dark w-100 py-3 fw-bold" href="/waiting">CONFIRM</a>

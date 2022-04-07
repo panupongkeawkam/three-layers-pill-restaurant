@@ -12,29 +12,33 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/home', async (req, res) => {
-  console.log(tableNo)
-  res.render('index')
+  console.log('Now customer get service in table ' + (tableNo || 'unknown') + '.')
+  res.render('customer/index')
 })
 
 router.post('/menu', async (req, res) => {
   console.log(req.body)
-  res.render('menu', { tableNo: tableNo })
+  res.render('customer/menu', { tableNo: tableNo })
 })
 
 router.get('/menu', async (req, res) => {
-  res.render('menu', { tableNo: tableNo })
+  res.render('customer/menu', { tableNo: tableNo })
 })
 
 router.get('/order-list', async (req, res) => {
-  res.render('order-list')
+  res.render('customer/order-list')
 })
 
 router.get('/waiting', async (req, res) => {
-  res.render('waiting')
+  res.render('customer/waiting')
 })
 
 router.get('/served', async (req, res) => {
-  res.render('served')
+  res.render('customer/served')
+})
+
+router.get('/check-bill', async (req, res) => {
+  res.render('customer/check-bill')
 })
 
 exports.router = router

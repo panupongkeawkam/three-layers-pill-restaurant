@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header') %>
+
+  <body>
+    <div id="app" class="container bg-light" ref="container">
+      <div class="row text-center d-flex flex-column justify-content-center align-items-center pt-5" ref="rowTop">
+        <h1 class="fs-1 fw-bold mb-3">Three Layers Pill</h1>
+        <p class="text-muted">Thai restaurant with greatness raw material import directly from Thailand, taste like
+          thai,
+          smile
+          like bangkok.</p>
+      </div>
+      <div class="row d-flex justify-content-center px-2" ref="rowCenter">
+        <div class="col-xxl-6 col-12">
+          <a href="/menu" class="btn btn-outline-dark py-3 fw-bold w-100" type="button">GUEST
+            CUSTOMER</a>
+          <div class="d-flex my-3">
+            <hr style="width: 100%">
+            <span class="text-center text-muted px-3 d-flex align-items-center"
+              style="width: auto; font-size: .75em; white-space: nowrap;">OR
+              BENEFIT WITH</span>
+            <hr style="width: 100%">
+          </div>
+          <button class="btn py-3 text-light fw-bold w-100" style="background: #ffa723" @click="ToggleMemberLogin()"
+            ref="memberLoginButton">MEMBER CUSTOMER</button>
+          <form class="p-3 border border-top-0 rounded-bottom mb-3" action="/menu" method="POST"
+            style="font-size: .8em; transform-origin: top" ref="memberLoginForm">
+            <div class="mb-3">
+              <label class="form-label text-muted">Username</label>
+              <input type="text" class="form-control" name="username" v-model="username" required>
+              <!-- <div class="form-text text-danger">*We'll never share your email with anyone else.</div> -->
+            </div>
+            <div class="mb-4">
+              <label class="form-label text-muted">Password</label>
+              <input type="password" class="form-control" name="password" v-model="password" required>
+            </div>
+            <button type="submit" class="btn btn-light border fw-bold text-muted">SUBMIT</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        username: '',
+        password: '',
+        showMemberLogin: false,
+      },
+      methods: {
+        ToggleMemberLogin() {
+          this.showMemberLogin = !this.showMemberLogin
+          if (this.showMemberLogin) {
+            this.$refs.memberLoginButton.style.borderRadius = '.25em .25em 0 0'
+            this.$refs.memberLoginForm.style.animation = 'slide-down .3s'
+            this.$refs.memberLoginForm.style.visibility = 'visible'
+            setTimeout(() => {
+              window.scrollTo(0, 3000)
+            }, 300)
+          } else if (!this.showMemberLogin) {
+            this.$refs.memberLoginButton.style.borderRadius = '.25em'
+            this.$refs.memberLoginForm.style.animation = 'slide-up .3s'
+            setTimeout(() => {
+              window.scrollTo(0, 0)
+              this.$refs.memberLoginForm.style.visibility = 'hidden'
+            }, 300)
+          }
+        }
+      },
+      mounted() {
+        this.$refs.container.style.minHeight = window.innerHeight + 'px'
+        this.$refs.rowTop.style.height = window.innerHeight * 0.4 + 'px'
+        this.$refs.rowCenter.style.minHeight = window.innerHeight * 0.6 + 'px'
+        this.$refs.memberLoginForm.style.visibility = 'hidden'
+
+        window.onresize = (event) => {
+          this.showMemberLogin = false
+          this.$refs.container.style.minHeight = window.innerHeight + 'px'
+          this.$refs.rowTop.style.height = window.innerHeight * 0.4 + 'px'
+          this.$refs.rowCenter.style.height = window.innerHeight * 0.6 + 'px'
+        }
+      }
+    })
+  </script>
+
+</html>

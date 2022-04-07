@@ -4,11 +4,6 @@ body {
   /* background: hsl(0, 0%, 90%); */
 }
 
-.animation {
-  transform-origin: top;
-  animation: slide-down .3s;
-}
-
 .clickable:hover {
   cursor: pointer;
 }
@@ -20,7 +15,8 @@ body {
 .number-notification {
   position: absolute;
   font-size: 10px;
-  background: #de132a;
+  /* background: #de132a; */
+  background: #0075ff;
   color: white;
   width: 20px;
   height: 20px;
@@ -30,6 +26,10 @@ body {
   border-radius: 50%;
   top: -30%;
   right: -80%;
+}
+
+.payment-active:active {
+  background: #ddd;
 }
 
 .btn.focus, .btn:focus, .form-control.focus, .form-control:focus {
@@ -53,5 +53,15 @@ body {
 
   to {
     transform: scaleY(1);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: scaleY(1);
+  }
+
+  to {
+    transform: scaleY(0);
   }
 }

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header') %>
+
+  <body>
+    <div id="app" class="container" ref="container" style="background: hsl(0, 0%, 90%)">
+      <a style="position: absolute; top: 1%; right: 10%" href="/served">BACK TO SERVED PAGE</a>
+
+      <div class="row shadow-sm pt-3 pb-2" style="background: #991728">
+        <div class="col-12">
+          <h1 class="fw-bold text-light">Billing</h1>
+        </div>
+      </div>
+
+      <div class="row mt-2 bg-light">
+        <div class="col-12 d-flex flex-column pt-3 pb-3 px-3">
+          <span class="fw-bold mb-2 text-muted">Total</span>
+          <span class="display-1 ms-1">220.00฿</span>
+        </div>
+        <div class="col-12 d-flex flex-column pt-3 pb-4 px-3">
+          <span class="fw-bold mb-2 text-muted">Receipt Number</span>
+          <span class="ms-2">6574165714</span>
+        </div>
+        <div class="col-12 mb-2" :class="{'pb-3': orderList.length <= 5}">
+          <span class="fw-bold text-muted">Order List</span>
+          <div class="row mx-0 mt-2 px-2" v-for="order in orderListToShow">
+            <div class="col-8 p-0">
+              <span>Casseroled prawns/shrimps with glass noodle</span>
+            </div>
+            <div class="col-1 p-0">
+              <span class="fw-bold" style="opacity: .4; font-size: .8em;">x5</span>
+            </div>
+            <div class="col-3 p-0 d-flex justify-content-end">
+              <span class="fw-bold">9500.00฿</span>
+            </div>
+            <!-- <hr class="mt-2 mb-1" style="opacity: .1"> -->
+          </div>
+        </div>
+        <div class="col-12 border-top py-1 text-muted text-center clickable" style="font-size: .8em" @click="hideOrderList = !hideOrderList" v-if="orderList.length > 5">
+          <i class="fas fa-angle-down clickable" v-show="hideOrderList"></i>
+          <i class="fas fa-angle-up clickable" v-show="!hideOrderList"></i>
+        </div>
+      </div>
+
+      <div class="row mt-2 bg-light">
+        <div class="col-12 d-flex flex-column pt-3 pb-3 px-3">
+          <span class="fw-bold mb-2 text-muted">Payment Methods</span>
+        </div>
+        <div class="col-12">
+          <div class="row px-3 mb-2" @click="payment = 'cash'" :class="{'text-success': payment === 'cash'}">
+            <div class="col py-2 rounded d-flex justify-content-between payment-active">
+              <div class="col-1">
+                <i class="fas fa-sack-dollar"></i>
+              </div>
+              <div class="col">
+                <span class="fw-bold ms-2">Cash</span>
+              </div>
+              <div class="col-1">
+                <i class="fas fa-check text-success" v-show="payment === 'cash'"></i>
+              </div>
+            </div>
+          </div>
+          <div class="row px-3 mb-2" @click="payment = 'mobile'" :class="{'text-success': payment === 'mobile'}">
+            <div class="col py-2 rounded d-flex justify-content-between payment-active">
+              <div class="col-1">
+                <i class="fas fa-money-bill-transfer"></i>
+              </div>
+              <div class="col">
+                <span class="fw-bold ms-2">Mobile Banking</span>
+              </div>
+              <div class="col-1">
+                <i class="fas fa-check text-success" v-show="payment === 'mobile'"></i>
+              </div>
+            </div>
+          </div>
+          <div class="row px-3 mb-2" @click="payment = 'card'" :class="{'text-success': payment === 'card'}">
+            <div class="col py-2 rounded d-flex justify-content-between payment-active">
+              <div class="col-1">
+                <i class="fas fa-credit-card"></i>
+              </div>
+              <div class="col">
+                <span class="fw-bold ms-2">Debit/Credit Card</span>
+              </div>
+              <div class="col-1">
+                <i class="fas fa-check text-success" v-show="payment === 'card'"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 py-3 border-top">
+          <a href="" class="btn w-100 fw-bold text-light py-3" style="background: #ffa723">Pay</a>
+        </div>
+      </div>
+
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        payment: 'cash',
+        orderList: [
+          {},
+          {},
+          {},
+          {},
+          {},
+          {},
+          {}
+        ],
+        hideOrderList: true,
+      },
+      computed: {
+        orderListToShow() {
+          return this.hideOrderList ? this.orderList.slice(0, 5) : this.orderList
+        }
+      }
+    })
+  </script>
+
+</html>
