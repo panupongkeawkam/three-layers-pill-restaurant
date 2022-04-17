@@ -14,7 +14,7 @@
       </div>
       <div class="row d-flex justify-content-center px-2" ref="rowCenter">
         <div class="col-xxl-6 col-12">
-          <a href="/menu" class="btn btn-outline-dark py-3 fw-bold w-100" type="button">GUEST
+          <a @click="fetchGuest()" class="btn btn-outline-dark py-3 fw-bold w-100" type="button">GUEST
             CUSTOMER</a>
           <div class="d-flex my-3">
             <hr style="width: 100%">
@@ -23,19 +23,21 @@
               BENEFIT WITH</span>
             <hr style="width: 100%">
           </div>
-          <button class="btn py-3 text-light fw-bold w-100" style="background: #ffa723" @click="ToggleMemberLogin()"
+          <button class="btn py-3 text-light fw-bold w-100" style="background: #ffa723" @click="toggleMemberLogin()"
             ref="memberLoginButton">MEMBER CUSTOMER</button>
-          <form class="p-3 border border-top-0 rounded-bottom mb-3" action="/menu" method="POST"
-            style="font-size: .8em; transform-origin: top" ref="memberLoginForm">
+          <form class="p-3 border border-top-0 rounded-bottom mb-3" :action="'/table/' + tableNo + '/login'"
+            method="POST" style="font-size: .8em; transform-origin: top" ref="memberLoginForm">
             <div class="mb-3">
-              <label class="form-label text-muted">Username</label>
-              <input type="text" class="form-control" name="username" v-model="username" required>
-              <!-- <div class="form-text text-danger">*We'll never share your email with anyone else.</div> -->
+              <label class="form-label text-muted">Phone Number</label>
+              <input type="number" class="form-control" name="phoneNumber" v-model="phoneNumber"
+                :class="{'border border-danger': error}" required>
             </div>
             <div class="mb-4">
               <label class="form-label text-muted">Password</label>
-              <input type="password" class="form-control" name="password" v-model="password" required>
+              <input type="password" class="form-control" name="password" v-model="password"
+                :class="{'border border-danger': error}" required>
             </div>
+            <div class="form-text text-danger mb-3" v-if="error">*User identifier invalid.</div>
             <button type="submit" class="btn btn-light border fw-bold text-muted">SUBMIT</button>
           </form>
         </div>
@@ -47,12 +49,14 @@
     var app = new Vue({
       el: '#app',
       data: {
-        username: '',
+        phoneNumber: '',
         password: '',
         showMemberLogin: false,
+        tableNo: null,
+        error: null
       },
       methods: {
-        ToggleMemberLogin() {
+        toggleMemberLogin() {
           this.showMemberLogin = !this.showMemberLogin
           if (this.showMemberLogin) {
             this.$refs.memberLoginButton.style.borderRadius = '.25em .25em 0 0'
@@ -69,7 +73,23 @@
               this.$refs.memberLoginForm.style.visibility = 'hidden'
             }, 300)
           }
+        },
+        async fetchGuest() {
+          fetch(`/table/${this.tableNo}/guest`, { method: 'POST' })
+            .then(res => res.text())
+            .then(res => {
+              if (res === 'success') {
+                window.location.href = `/table/${this.tableNo}/menu`
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
         }
+      },
+      created() {
+        this.tableNo = `<%- tableNo %>`
+        this.error = `<%- error %>` === 'true'
       },
       mounted() {
         this.$refs.container.style.minHeight = window.innerHeight + 'px'
@@ -82,6 +102,10 @@
           this.$refs.container.style.minHeight = window.innerHeight + 'px'
           this.$refs.rowTop.style.height = window.innerHeight * 0.4 + 'px'
           this.$refs.rowCenter.style.height = window.innerHeight * 0.6 + 'px'
+        }
+
+        if (this.error) {
+          this.toggleMemberLogin()
         }
       }
     })

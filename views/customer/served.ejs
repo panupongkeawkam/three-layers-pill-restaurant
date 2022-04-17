@@ -5,12 +5,11 @@
 
   <body>
     <div id="app" class="container" ref="container">
-      <a style="position: absolute; top: 20%" href="/waiting">BACK TO WAITING PAGE</a>
       <div class="row d-flex justify-content-center align-content-center p-3 h-100">
         <div class="display-3 fw-bold text-center mb-2">Enjoy Your Meal</div>
         <div class="text-muted text-center mb-4">You can call to check bill whatever you want when finished your meal
         </div>
-        <a class="btn btn-outline-dark w-100 py-3 fw-bold mx-5" href="/check-bill">CHECK BILL</a>
+        <a class="btn btn-outline-dark w-100 py-3 fw-bold mx-5" @click="fetchCheckBill()">CHECK BILL</a>
       </div>
     </div>
   </body>
@@ -19,7 +18,18 @@
     var app = new Vue({
       el: '#app',
       data: {
-        dot: ''
+        tableNo: `<%- tableNo %>`,
+      },
+      methods: {
+        async fetchCheckBill() {
+          fetch(`/table/${this.tableNo}/check-bill`, { method: 'POST' })
+            .then(res => res)
+            .then(res => {
+              window.location.href = `/table/${this.tableNo}/check-bill`
+            }).catch(err => {
+              console.log(err)
+            })
+        }
       },
       mounted() {
         this.$refs.container.style.height = window.outerHeight + 'px'

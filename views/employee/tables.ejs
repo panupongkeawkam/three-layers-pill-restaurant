@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header') %>
+
+  <body>
+    <div id="app" class="container">
+      <div id="main" class="row rounded py-4" style="overflow: hidden">
+        <div class="col px-3" style="min-height: 100%; max-height: 100%;">
+          <div class="col py-3 px-4">
+
+            <!-- navbar -->
+            <div class="col-12 mb-3 rounded border p-3 d-flex justify-content-between align-items-center">
+              <span class="fw-bold fs-1">
+                Tables
+              </span>
+              <div class="d-flex">
+                <select class="form-select me-3 border-secondary clickable">
+                  <option selected>-- No Filter --</option>
+                  <option value="3">Created</option>
+                  <option value="1">Waiting</option>
+                  <option value="2">Served</option>
+                  <option value="3">Empty</option>
+                </select>
+                <button class="btn btn-outline-secondary" style="white-space: nowrap">
+                  <i class="fas fa-burger me-1"></i>
+                  MANAGE MENUS
+                </button>
+              </div>
+            </div>
+
+            <!-- tables overview -->
+            <div class="col-12 d-flex flex-wrap justify-content-evenly align-items-evenly rounded border py-2"
+              style="overflow: auto; max-height: 80vh">
+              <!-- each table -->
+              <div class="col-3 shadow-sm my-2 clickable" v-for="i in 15" data-bs-toggle="modal"
+                data-bs-target="#tableInfo" style="width: calc(25% - 1rem); min-height: 240px; overflow: hidden;">
+                <div
+                  class="col-12 fw-2 px-3 fw-bold rounded-top text-light d-flex justify-content-center align-items-center"
+                  style="height: 20%; background: #179967">
+                  Table {{ i }}
+                </div>
+                <div class="col-12 fw-bold rounded-bottom text-light p-3 d-flex flex-column justify-content-between"
+                  style="height: 80%; background: hsl(0, 0%, 95%)">
+                  <div>
+                    <div class="col-12 mb-2 text-secondary d-flex justify-content-between">
+                      <span>Total</span>
+                      <span>220.00 Bath</span>
+                    </div>
+                    <div class="col-12 text-secondary d-flex justify-content-between">
+                      <span>Amount</span>
+                      <span>1 Item</span>
+                    </div>
+                  </div>
+                  <div class="col-12 d-flex justify-content-end">
+                    <span>
+                      <!-- <i class="fas fa-clipboard-question fs-2 text-muted"></i> -->
+                      <!-- <i class="fas fa-stopwatch fs-2 text-muted"></i> -->
+                      <!-- <i class="fas fa-utensils fs-2 text-muted"></i> -->
+                      <i class="fas fa-clipboard-check fs-3" style="color: #179967" title="Served"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-3 my-2" style="width: calc(25% - 1rem); min-height: 240px">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- table information popup -->
+          <div class="modal fade" id="tableInfo" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content border-0" style="min-height: 720px">
+                <div class="modal-header">
+                  <span>
+                    <i class="fas fs-4"></i>
+                  </span>
+                  <h5 class="modal-title fw-bold">Table 1</h5>
+                  <span>
+                    <i class="fas fa-xmark fs-4 clickable" data-bs-dismiss="modal" aria-label="Close"></i>
+                  </span>
+                </div>
+                <div class="modal-body px-5 pt-4">
+                  <!-- table stat -->
+                  <div class="row p-0">
+                    <div class="col p-0 mb-4">
+                      <i class="fas fa-clipboard-check me-2" style="color: #ffa723"></i>
+                      <span>Served</span>
+                    </div>
+                  </div>
+
+                  <!-- order item in one order -->
+                  <div class="row rounded border mb-4 p-2" style="height: 400px; overflow: auto;">
+                    <div class="col-12 mb-2 d-flex justify-content-between border rounded p-3" v-for="i in 100">
+                      <span class="fw-4">Mama put kai put moo put ma</span>
+                      <span class="fw-4 text-muted">x2</span>
+                    </div>
+                  </div>
+
+                  <!-- order summary -->
+                  <div class="row" style="min-height: 60px; overflow: auto;">
+                    <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border mb-3 me-2"
+                      style="font-size: .8em; width: calc(50% - .5rem)">
+                      <span class="text-muted">Customer</span>
+                      <span style="font-size: 1.8em">(Guest)</span>
+                    </div>
+                    <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border mb-3 ms-2"
+                      style="font-size: .8em; width: calc(50% - .5rem)">
+                      <span class="text-muted">Check-in</span>
+                      <span style="font-size: 1.8em">Today 12:50:12 AM</span>
+                    </div>
+                    <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border me-2"
+                      style="width: calc(50% - .5rem)">
+                      <span class="text-muted">Amount</span>
+                      <span style="font-size: 1.8em">1 Item</span>
+                    </div>
+                    <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border ms-2"
+                      style="width: calc(50% - .5rem)">
+                      <span class="text-muted">Subtotal</span>
+                      <span style="font-size: 1.8em">2450.00฿</span>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer border-0 p-4">
+                  <button type="button" class="btn py-3 px-5 text-light fw-bold"
+                    style="font-size: 1.2em; background: #176b99;" disabled>
+                    <i class="fas fa-bell-concierge me-2"></i>
+                    SERVE
+                  </button>
+                  <button type="button" class="btn py-3 px-5 text-light fw-bold"
+                    style="font-size: 1.2em; background: #991728">
+                    <i class="fas fa-trash-can me-2"></i>
+                    CANCEL ORDER
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        showTableInfo: false
+      },
+      methods: {
+      },
+      created() {
+        document.getElementById('main').style.minHeight = window.innerHeight + 'px'
+        document.getElementById('main').style.maxHeight = window.innerHeight + 'px'
+
+        window.onresize = () => {
+          document.getElementById('main').style.minHeight = window.innerHeight + 'px'
+          document.getElementById('main').style.maxHeight = window.innerHeight + 'px'
+        }
+      }
+    })
+  </script>
+
+</html>

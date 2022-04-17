@@ -5,7 +5,6 @@
 
   <body>
     <div id="app" class="container" ref="container" style="background: hsl(0, 0%, 90%)">
-      <a style="position: absolute; top: 1%; right: 10%" href="/served">BACK TO SERVED PAGE</a>
 
       <div class="row shadow-sm pt-3 pb-2" style="background: #991728">
         <div class="col-12">
@@ -16,30 +15,31 @@
       <div class="row mt-2 bg-light">
         <div class="col-12 d-flex flex-column pt-3 pb-3 px-3">
           <span class="fw-bold mb-2 text-muted">Total</span>
-          <span class="display-1 ms-1">220.00฿</span>
+          <span class="display-1 ms-1">{{ order.total_price.toFixed(2) }}฿</span>
         </div>
         <div class="col-12 d-flex flex-column pt-3 pb-4 px-3">
           <span class="fw-bold mb-2 text-muted">Receipt Number</span>
-          <span class="ms-2">6574165714</span>
+          <span class="ms-2">{{ receipt.receipt_no }}</span>
         </div>
-        <div class="col-12 mb-2" :class="{'pb-3': orderList.length <= 5}">
+        <div class="col-12 mb-2" :class="{'pb-3': orderItem.length <= 5}">
           <span class="fw-bold text-muted">Order List</span>
-          <div class="row mx-0 mt-2 px-2" v-for="order in orderListToShow">
-            <div class="col-8 p-0">
-              <span>Casseroled prawns/shrimps with glass noodle</span>
+          <div class="row mx-0 mt-2 px-2" v-for="item in orderItemToShow">
+            <div class="col-8 p-0 pe-3">
+              <span>{{ getMenuName(item.menu_id) }}</span>
             </div>
             <div class="col-1 p-0">
-              <span class="fw-bold" style="opacity: .4; font-size: .8em;">x5</span>
+              <span class="fw-bold" style="opacity: .4; font-size: .8em;">x{{ item.amount }}</span>
             </div>
             <div class="col-3 p-0 d-flex justify-content-end">
-              <span class="fw-bold">9500.00฿</span>
+              <span class="fw-bold">{{ item.total_price.toFixed(2) }}฿</span>
             </div>
             <!-- <hr class="mt-2 mb-1" style="opacity: .1"> -->
           </div>
         </div>
-        <div class="col-12 border-top py-1 text-muted text-center clickable" style="font-size: .8em" @click="hideOrderList = !hideOrderList" v-if="orderList.length > 5">
-          <i class="fas fa-angle-down clickable" v-show="hideOrderList"></i>
-          <i class="fas fa-angle-up clickable" v-show="!hideOrderList"></i>
+        <div class="col-12 border-top py-1 text-muted text-center clickable" style="font-size: .8em"
+          @click="hideOrderItem = !hideOrderItem" v-if="orderItem.length > 5">
+          <i class="fas fa-angle-down clickable" v-show="hideOrderItem"></i>
+          <i class="fas fa-angle-up clickable" v-show="!hideOrderItem"></i>
         </div>
       </div>
 
@@ -100,22 +100,31 @@
     var app = new Vue({
       el: '#app',
       data: {
+        tableNo: `<%- tableNo %>`,
+        customerType: '',
+        menus: [],
+        order: {},
+        orderItem: [],
+        receipt: {},
         payment: 'cash',
-        orderList: [
-          {},
-          {},
-          {},
-          {},
-          {},
-          {},
-          {}
-        ],
-        hideOrderList: true,
+        hideOrderItem: true,
+      },
+      methods: {
+        getMenuName(menu_id) {
+          return this.menus.filter(val => val.menu_id === menu_id)[0].menu_name
+        }
       },
       computed: {
-        orderListToShow() {
-          return this.hideOrderList ? this.orderList.slice(0, 5) : this.orderList
+        orderItemToShow() {
+          return this.hideOrderItem ? this.orderItem.slice(0, 5) : this.orderItem
         }
+      },
+      created() {
+        this.customerType = `<%- customerType %>`
+        this.menus = JSON.parse(`<%- menus %>`)
+        this.order = JSON.parse(`<%- order %>`)
+        this.orderItem = JSON.parse(`<%- orderItem %>`)
+        this.receipt = JSON.parse(`<%- receipt %>`)
       }
     })
   </script>

@@ -1,7 +1,7 @@
 body {
   font-family: 'Inter', sans-serif;
   scroll-behavior: smooth;
-  /* background: hsl(0, 0%, 90%); */
+  margin: 0;
 }
 
 .clickable:hover {

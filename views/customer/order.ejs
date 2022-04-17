@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('header') %>
+
+  <body>
+    <div id="app" class="container bg-light d-flex flex-column justify-content-between" ref="container">
+      <section ref="sectionTop">
+        <div class="row shadow-sm py-3 position-sticky" style="z-index: 1; background: #991728">
+          <div class="col-12 pb-3">
+            <h1 class="fw-bold text-light">Order List</h1>
+          </div>
+          <div class="col-12 d-flex align-items-center clickable" @click="redirect(`/table/${tableNo}/menu`)">
+            <i class="fas fa-angle-left" style="color: #eee"></i>
+            <span class="ms-2" style="color: #eee">Menu</span>
+          </div>
+        </div>
+
+        <!-- order list -->
+        <div class="row" v-if="orderItem.length === 0">
+          <spam class="fs-3 fw-bold d-flex justify-content-center py-4" style="opacity: .3">No Order</spam>
+        </div>
+        <div class="row py-3 border-bottom px-2" v-for="item in orderItem">
+          <div class="col-8 d-flex flex-column">
+            <span>{{ getMenuName(item.menu_id) }}</span>
+            <span class="fw-bold mt-1">{{ item.price }}฿</span>
+          </div>
+          <div class="col-4 d-flex justify-content-end align-items-center">
+            <i class="fas fa-minus-circle clickable" style="font-size: 1.5em; color: #a6adac;"
+              @click="removeItem(item.item_no)"></i>
+            <span class="fw-3 fw-bold px-2">{{ item.amount }}</span>
+            <i class="fas fa-plus-circle clickable" style="font-size: 1.5em; color: #a6adac;"
+              @click="addItem(item.item_no)"></i>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="row bg-light py-3 bottom-0 position-sticky shadow rounded-3-top">
+        <div class="col-12 d-flex justify-content-between mb-4">
+          <span class="fw-bold text-muted">SUBTOTAL:</span>
+          <span class="fw-bold">{{ order.total_price }}฿</span>
+        </div>
+        <div class="col-12 mb-2">
+          <a class="btn text-light w-100 py-3 fw-bold" style="background: #ffa723" data-bs-toggle="modal"
+            :data-bs-target="orderItem.length !== 0 ? '#confirmReset' : ''">CLEAR</a>
+        </div>
+        <div class="col-12">
+          <a class="btn btn-outline-dark w-100 py-3 fw-bold" @click="fetchConfirm()">CONFIRM</a>
+        </div>
+      </section>
+
+      <!-- confirm delete modal -->
+      <div class="modal fade px-5" tabindex="-1" id="confirmReset" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header d-flex justify-content-center">
+              <h5 class="modal-title">Confirm remove all order?</h5>
+            </div>
+            <div class="modal-footer d-flex justify-content-center">
+              <button type="button" class="btn btn-danger" style="width: 40%" @click="fetchClear()"
+                data-bs-dismiss="modal">Yes</button>
+              <button type="button" class="btn btn-outline-secondary" style="width: 40%"
+                data-bs-dismiss="modal">No</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </body>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        tableNo: `<%- tableNo %>`,
+        customerType: '',
+        menus: [],
+        order: {},
+        orderItem: []
+      },
+      methods: {
+        redirect(path) {
+          window.location.href = path
+        },
+        getMenuName(menu_id) {
+          return this.menus.filter(val => val.menu_id === menu_id)[0].menu_name
+        },
+        async removeItem(itemNo) {
+          var targetItem = this.orderItem.find(val => val.item_no === itemNo)
+
+          if (targetItem.amount === 1) {
+            await this.fetchDelete(itemNo)
+
+            var targetIndex = this.orderItem.findIndex(val => val.item_no === itemNo)
+            this.order.total_price -= targetItem.price
+            this.order.quantity_item -= 1
+            this.orderItem.splice(targetIndex, 1)
+
+            return
+          }
+
+          await this.fetchDecrease(itemNo)
+
+          targetItem.total_price -= targetItem.price
+          targetItem.amount -= 1
+          this.order.total_price -= targetItem.price
+          this.order.quantity_item -= 1
+        },
+        async addItem(itemNo) {
+          var targetItem = this.orderItem.find(val => val.item_no === itemNo)
+
+          await this.fetchIncrease(itemNo)
+
+          targetItem.total_price += targetItem.price
+          targetItem.amount += 1
+          this.order.total_price += targetItem.price
+          this.order.quantity_item += 1
+        },
+        async fetchDecrease(itemNo) {
+          fetch(`/order/${this.order.order_id}/${itemNo}/decrease`, { method: 'PUT' })
+            .then(res => res)
+            .then(res => { })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        async fetchIncrease(itemNo) {
+          fetch(`/order/${this.order.order_id}/${itemNo}/increase`, { method: 'PUT' })
+            .then(res => res)
+            .then(res => { })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        async fetchDelete(itemNo) {
+          fetch(`/order/${this.order.order_id}/${itemNo}/delete`, { method: 'DELETE' })
+            .then(res => res)
+            .then(res => { })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        async fetchClear() {
+          fetch(`/order/${this.order.order_id}/clear`, { method: 'DELETE' })
+            .then(res => res)
+            .then(res => {
+              this.order.total_price = 0.00
+              this.order.quantity_item = 0
+              this.orderItem = []
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        async fetchConfirm() {
+          if (this.order.quantity_item === 0) {
+            return
+          }
+          fetch(`/order/${this.order.order_id}/confirm`, { method: 'POST' })
+            .then(res => res)
+            .then(res => {
+              window.location.href = `/table/${this.tableNo}/waiting`
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      },
+      created() {
+        this.customerType = `<%- customerType %>`
+        this.menus = JSON.parse(`<%- menus %>`)
+        this.order = JSON.parse(`<%- order %>`)
+        this.orderItem = JSON.parse(`<%- orderItem %>`)
+      },
+      mounted() {
+        this.$refs.container.style.minHeight = window.outerHeight + 'px'
+        var height = this.$refs.sectionTop.children[0].children[0].clientHeight
+        this.$refs.sectionTop.children[0].style.top = -1 * height + 'px'
+
+        window.onresize = (event) => {
+          this.$refs.container.style.minHeight = window.innerHeight + 'px'
+        }
+      }
+    })
+  </script>
+
+</html>

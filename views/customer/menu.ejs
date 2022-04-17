@@ -10,33 +10,36 @@
           <h1 class="fw-bold text-light">Menus</h1>
         </div>
         <div class="col-12 d-flex">
-          <input class="form-control border rounded px-3" style="border-radius: .25em 0 0 .25em !important" type="text"
-            placeholder="Search">
-          <button class="btn border border-start-0 rounded text-muted px-4 bg-light clickable"
-            style="border-radius: 0 .25em .25em 0 !important" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
+          <input class="form-control border-0 rounded px-3" type="text" placeholder="Search" v-model="searchQuery">
           <div class="d-flex justify-content-center align-items-center ms-3 mx-2">
-            <i class="fas fa-home text-light clickable me-3" style="font-size: 1.5em"
-              onclick="window.location.href = '/home'"></i>
-            <i class="fas fa-clipboard-check text-light position-relative clickable" style="font-size: 1.5em"
-              onclick="window.location.href = '/order-list'">
-              <span class="number-notification">9</span>
-            </i>
+            <a :href="`/table/${tableNo}/order`">
+              <i class="fas fa-clipboard-check text-light position-relative clickable" style="font-size: 1.5em">
+                <span class="number-notification" v-if="order.quantity_item !== 0">{{ order.quantity_item }}</span>
+              </i>
+            </a>
           </div>
         </div>
       </div>
-      <div class="row py-3 px-2 border-bottom" v-for="i in 10">
+
+      <!-- menu list -->
+      <div class="row py-3 px-2 border-bottom"
+        v-for="menu in menus.filter(val => val.menu_name.toLowerCase().includes(searchQuery.toLowerCase()))">
         <div class="col-8">
-          <span>Casseroled prawns/shrimps with glass noodles</span>
+          <span>{{ menu.menu_name }}</span>
         </div>
         <div class="col-2 fw-bold">
-          <span>95.00฿</span>
+          <div v-if="customerType === 'member'">
+            <span style="text-decoration: line-through; opacity: .5;" v-if="menu.menu_price !== menu.member_price">{{ menu.menu_price.toFixed(2) }}฿</span>
+            <span>{{ menu.member_price.toFixed(2) }}฿</span>
+          </div>
+          <span v-else>{{ menu.menu_price.toFixed(2) }}฿</span>
         </div>
         <div class="col-2 d-flex justify-content-end align-items-center">
-          <i class="fas fa-plus-circle clickable" style="font-size: 1.5em; color: #ffa723"></i>
+          <i :id="'menu' + menu.menu_id" class="fas fa-plus-circle clickable" style="font-size: 1.5em; color: #ffa723"
+            @click="add(menu)" key="'menu' + menu.menu_id" disabled></i>
         </div>
       </div>
+
     </div>
   </body>
 
@@ -44,7 +47,72 @@
     var app = new Vue({
       el: '#app',
       data: {
-        tableNo: `<%- tableNo %>`
+        tableNo: `<%- tableNo %>`,
+        customerType: '',
+        menus: [],
+        order: {},
+        orderItem: [],
+        searchQuery: ''
+      },
+      methods: {
+        async add(menu) {
+          var targetItem = this.orderItem.find(val => val.menu_id === menu.menu_id)
+
+          if (targetItem !== undefined) {
+            await this.fetchIncrease(targetItem.item_no)
+
+            targetItem.item_no
+            targetItem.amount += 1
+            targetItem.total_price += targetItem.price
+            this.order.total_price += targetItem.price
+            this.order.quantity_item += 1
+
+            return
+          }
+
+          var price = this.customerType === 'normal' ? menu.menu_price : menu.member_price
+          var menu = {
+            menu_id: menu.menu_id,
+            menu_price: price
+          }
+          await this.fetchAdd(menu)
+        },
+        async fetchIncrease(itemNo) {
+          fetch(`/order/${this.order.order_id}/${itemNo}/increase`, { method: 'PUT' })
+            .then(res => res)
+            .then(res => { })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        async fetchAdd(menu) {
+          console.log(menu)
+          fetch(`/order/${this.order.order_id}?menu=${JSON.stringify(menu)}`, { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+              var newOrderItem = {
+                item_no: data.item_no,
+                total_price: menu.menu_price,
+                amount: 1,
+                price: menu.menu_price,
+                order_id: this.order.order_id,
+                menu_id: menu.menu_id
+              }
+
+              this.orderItem.push(newOrderItem)
+              this.order.total_price += newOrderItem.price
+              this.order.quantity_item += 1
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      },
+      created() {
+        this.customerType = `<%- customerType %>`
+        this.menus = JSON.parse(`<%- menus %>`)
+        this.order = JSON.parse(`<%- order %>`)
+        this.orderItem = JSON.parse(`<%- orderItem %>`)
       },
       mounted() {
         this.$refs.container.style.minHeight = window.outerHeight + 'px'
