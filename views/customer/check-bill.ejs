@@ -89,7 +89,7 @@
           </div>
         </div>
         <div class="col-12 py-3 border-top">
-          <a href="" class="btn w-100 fw-bold text-light py-3" style="background: #ffa723">Pay</a>
+          <a class="btn w-100 fw-bold text-light py-3" style="background: #ffa723" @click="fetchPay()">Pay</a>
         </div>
       </div>
 
@@ -112,6 +112,16 @@
       methods: {
         getMenuName(menu_id) {
           return this.menus.filter(val => val.menu_id === menu_id)[0].menu_name
+        },
+        fetchPay() {
+          fetch(`/order/${this.order.order_id}/${this.tableNo}/pay`, { method: 'POST' })
+            .then(res => res.text())
+            .then(data => {
+              window.location.href = '/completed'
+            })
+            .catch(err => {
+              console.log(err)
+            })
         }
       },
       computed: {

@@ -5,65 +5,141 @@
 
   <body>
     <div id="app" class="container">
-      <div id="main" class="row rounded py-4" style="overflow: hidden">
+      <div id="main" class="row rounded py-4">
         <div class="col px-3" style="min-height: 100%; max-height: 100%;">
           <div class="col py-3 px-4">
 
             <!-- navbar -->
             <div class="col-12 mb-3 rounded border p-3 d-flex justify-content-between align-items-center">
               <span class="fw-bold fs-1">
-                Tables
+                {{ showTables ? 'Tables' : 'Menus'}}
               </span>
               <div class="d-flex">
-                <select class="form-select me-3 border-secondary clickable">
-                  <option selected>-- No Filter --</option>
-                  <option value="3">Created</option>
-                  <option value="1">Waiting</option>
-                  <option value="2">Served</option>
-                  <option value="3">Empty</option>
-                </select>
-                <button class="btn btn-outline-secondary" style="white-space: nowrap">
-                  <i class="fas fa-burger me-1"></i>
-                  MANAGE MENUS
+                <button class="btn btn-outline-secondary" style="white-space: nowrap" @click="showTables = !showTables">
+                  <i class="fas fa-burger me-1" v-if="showTables"></i>
+                  <i class="fas fa-table-cells me-1" v-else></i>
+                  MANAGE {{ showTables ? 'MENUS' : 'TABLES'}}
                 </button>
               </div>
             </div>
 
             <!-- tables overview -->
             <div class="col-12 d-flex flex-wrap justify-content-evenly align-items-evenly rounded border py-2"
-              style="overflow: auto; max-height: 80vh">
+              style="overflow: auto; max-height: 80vh" v-if="showTables">
               <!-- each table -->
-              <div class="col-3 shadow-sm my-2 clickable" v-for="i in 15" data-bs-toggle="modal"
-                data-bs-target="#tableInfo" style="width: calc(25% - 1rem); min-height: 240px; overflow: hidden;">
+              <div class="col-3 shadow-sm my-2" :class="{'clickable': table.table_status === 'not_ready'}"
+                v-for="table in tables" data-bs-target="#tableInfo" @click="getInfo(table)"
+                :data-bs-toggle="table.table_status === 'not_ready' ? 'modal' : ''"
+                :style="{filter: table.table_status === 'not_ready' ? 'opacity(1)' : 'opacity(.3)'}"
+                style="width: calc(25% - 1rem); min-height: 240px; overflow: hidden;">
                 <div
                   class="col-12 fw-2 px-3 fw-bold rounded-top text-light d-flex justify-content-center align-items-center"
-                  style="height: 20%; background: #179967">
-                  Table {{ i }}
+                  style="height: 20%" :style="{background: getColor(table.status)}">
+                  Table {{ table.table_id }}
                 </div>
                 <div class="col-12 fw-bold rounded-bottom text-light p-3 d-flex flex-column justify-content-between"
                   style="height: 80%; background: hsl(0, 0%, 95%)">
                   <div>
                     <div class="col-12 mb-2 text-secondary d-flex justify-content-between">
                       <span>Total</span>
-                      <span>220.00 Bath</span>
+                      <span>{{ table.total_price !== undefined ? table.total_price.toFixed(2) + ' Bath' : '--' }}</span>
                     </div>
                     <div class="col-12 text-secondary d-flex justify-content-between">
                       <span>Amount</span>
-                      <span>1 Item</span>
+                      <span>{{ table.quantity_item !== undefined ? table.quantity_item + ' item' : '--' }}</span>
                     </div>
                   </div>
                   <div class="col-12 d-flex justify-content-end">
                     <span>
-                      <!-- <i class="fas fa-clipboard-question fs-2 text-muted"></i> -->
-                      <!-- <i class="fas fa-stopwatch fs-2 text-muted"></i> -->
-                      <!-- <i class="fas fa-utensils fs-2 text-muted"></i> -->
-                      <i class="fas fa-clipboard-check fs-3" style="color: #179967" title="Served"></i>
+                      <i class="fas fa-clipboard-question fs-2" style="color: #176b99"
+                        v-if="table.status === 'created'"></i>
+                      <i class="fas fa-stopwatch fs-2" style="color: #ffa723"
+                        v-else-if="table.status === 'pending'"></i>
+                      <i class="fas fa-utensils fs-2" style="color: #179967" v-else-if="table.status === 'served'"></i>
                     </span>
                   </div>
                 </div>
               </div>
 
               <div class="col-3 my-2" style="width: calc(25% - 1rem); min-height: 240px">
+              </div>
+            </div>
+
+            <!-- manage menus element -->
+            <div class="col-12 d-flex" v-else>
+              <div class="col-9 pe-3">
+                <div class="col-12 rounded border px-2 pt-2 h-100"
+                  style="overflow: auto; max-height: 68vh; min-height: 68vh">
+                  <div class="col-12 d-flex mb-2 p-3 rounded border" v-for="menu in sortedMenus">
+                    <div class="col-7 pe-4">
+                      <i class="fas fa-circle text-success me-1"
+                        :class="{'text-danger': menu.menu_status === 'not_ready'}" style="font-size: .6rem"></i>
+                      <span>{{ menu.menu_name }}</span>
+                    </div>
+                    <div class="col-2 pe-4">
+                      <span>{{ menu.menu_price.toFixed(2) }}฿</span>
+                    </div>
+                    <div class="col-2 pe-4 text-danger">
+                      <span style="white-space: nowrap" v-if="menu.menu_price !== menu.member_price"><i
+                          class="fas fa-tag me-1"></i>{{ menu.member_price.toFixed(2) }}฿</span>
+                    </div>
+                    <div class="col-1 d-flex justify-content-end fs-5 text-secondary">
+                      <i class="fas fa-pen-to-square me-3 clickable" data-bs-toggle="modal" data-bs-target="#editMenu"
+                        @click="editMenu(menu)"></i>
+                      <i class="fas fa-trash-can clickable" data-bs-toggle="modal" data-bs-target="#deleteMenu"
+                        @click="deleteMenuId = menu.menu_id; deleteMenuName = menu.menu_name"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 rounded border mt-3 py-3 px-3" style="min-height: calc(12vh - 1rem);">
+                  <div class="col-12 fw-bold mb-1">Add New Menu</div>
+                  <div class="col-12 d-flex">
+                    <div class="col-5 pe-3 ps-0">
+                      <input class="form-control" :class="{'border-danger': newMenuNameErr}" placeholder="Menu name"
+                        type="text" v-model="newMenuName" @focus="newMenuNameErr = false">
+                    </div>
+                    <div class="col-3 pe-3 ps-0">
+                      <input class="form-control" :class="{'border-danger': newMenuPriceErr}" placeholder="Menu price"
+                        type="number" v-model="newMenuPrice" @focus="newMenuPriceErr = false">
+                    </div>
+                    <div class="col-2 pe-3 ps-0">
+                      <input class="form-control" :class="{'border-danger': newMenuDiscountErr}" placeholder="Discount"
+                        type="number" v-model="newMenuDiscount" @focus="newMenuDiscountErr = false">
+                    </div>
+                    <div class="col-2">
+                      <button class="btn px-4 fw-bold text-light" style="background: #179967"
+                        @click="addNewMenu()">ADD</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-3">
+                <div class="col-12 rounded border p-3 pb-4">
+                  <div class="mb-3">
+                    <span><i class="fas fa-sort me-2"></i></span>
+                    <span class="fw-bold">Sort by</span>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" name="sortBy" v-model="sortBy" value="recent">
+                    <span>Recent Added</span>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" name="sortBy" v-model="sortBy" value="alphabetAsc">
+                    <span>Alphabet A-Z</span>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" name="sortBy" v-model="sortBy" value="alphabetDesc">
+                    <span>Alphabet Z-A</span>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" name="sortBy" v-model="sortBy" value="priceAsc">
+                    <span>Price Min-to-Max</span>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input class="form-check-input" type="radio" name="sortBy" v-model="sortBy" value="priceDesc">
+                    <span>Price Max-to-Min</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -77,7 +153,7 @@
                   <span>
                     <i class="fas fs-4"></i>
                   </span>
-                  <h5 class="modal-title fw-bold">Table 1</h5>
+                  <h5 class="modal-title fw-bold">Table {{ displayOrder.table_id }}</h5>
                   <span>
                     <i class="fas fa-xmark fs-4 clickable" data-bs-dismiss="modal" aria-label="Close"></i>
                   </span>
@@ -86,16 +162,29 @@
                   <!-- table stat -->
                   <div class="row p-0">
                     <div class="col p-0 mb-4">
-                      <i class="fas fa-clipboard-check me-2" style="color: #ffa723"></i>
-                      <span>Served</span>
+                      <div v-if="displayOrder.status === 'created'">
+                        <i class="fas fa-clipboard-question me-2 fs-5" style="color: #176b99"></i>
+                        <span>Check In</span>
+                      </div>
+                      <div v-else-if="displayOrder.status === 'pending'">
+                        <i class="fas fa-stopwatch me-2 fs-5" style="color: #ffa723"></i>
+                        <span>Waiting</span>
+                      </div>
+                      <div v-else-if="displayOrder.status === 'served'">
+                        <i class="fas fa-utensils me-2 fs-5" style="color: #179967"></i>
+                        <span>Served</span>
+                      </div>
+                      <!-- <i class="fas fa-clipboard-check me-2" style="color: #ffa723"></i> -->
                     </div>
                   </div>
 
                   <!-- order item in one order -->
-                  <div class="row rounded border mb-4 p-2" style="height: 400px; overflow: auto;">
-                    <div class="col-12 mb-2 d-flex justify-content-between border rounded p-3" v-for="i in 100">
-                      <span class="fw-4">Mama put kai put moo put ma</span>
-                      <span class="fw-4 text-muted">x2</span>
+                  <div class="row d-flex flex-nowrap flex-column rounded border mb-4 p-2"
+                    style="height: 400px; overflow: auto;">
+                    <div class="col-12 mb-2 d-flex justify-content-between border rounded p-3"
+                      v-for="item in displayOrderItem">
+                      <span class="fw-4">{{ item.menu_name }}</span>
+                      <span class="fw-4 text-muted">x{{ item.amount }}</span>
                     </div>
                   </div>
 
@@ -104,34 +193,37 @@
                     <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border mb-3 me-2"
                       style="font-size: .8em; width: calc(50% - .5rem)">
                       <span class="text-muted">Customer</span>
-                      <span style="font-size: 1.8em">(Guest)</span>
+                      <span style="font-size: 1.8em">{{ customerName }}</span>
                     </div>
                     <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border mb-3 ms-2"
                       style="font-size: .8em; width: calc(50% - .5rem)">
                       <span class="text-muted">Check-in</span>
-                      <span style="font-size: 1.8em">Today 12:50:12 AM</span>
+                      <span style="font-size: 1.8em">{{ displayOrder.check_in }}</span>
                     </div>
                     <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border me-2"
                       style="width: calc(50% - .5rem)">
                       <span class="text-muted">Amount</span>
-                      <span style="font-size: 1.8em">1 Item</span>
+                      <span style="font-size: 1.8em">{{ displayOrder.quantity_item }} Item</span>
                     </div>
                     <div class="d-flex fw-bold flex-column pt-2 pb-3 rounded border ms-2"
                       style="width: calc(50% - .5rem)">
                       <span class="text-muted">Subtotal</span>
-                      <span style="font-size: 1.8em">2450.00฿</span>
+                      <span style="font-size: 1.8em">{{ displayOrder.total_price === undefined ? '' :
+                        displayOrder.total_price.toFixed(2) }}฿</span>
                     </div>
                   </div>
 
                 </div>
                 <div class="modal-footer border-0 p-4">
-                  <button type="button" class="btn py-3 px-5 text-light fw-bold"
-                    style="font-size: 1.2em; background: #176b99;" disabled>
+                  <button type="button" class="btn py-3 px-5 text-light fw-bold clickable"
+                    style="font-size: 1.2em; background: #176b99;" v-if="displayOrder.status === 'pending'"
+                    data-bs-dismiss="modal" @click="serveOrder()">
                     <i class="fas fa-bell-concierge me-2"></i>
                     SERVE
                   </button>
                   <button type="button" class="btn py-3 px-5 text-light fw-bold"
-                    style="font-size: 1.2em; background: #991728">
+                    style="font-size: 1.2em; background: #991728" v-if="displayOrder.status !== 'served'"
+                    data-bs-target="#cancelOrder" data-bs-toggle="modal">
                     <i class="fas fa-trash-can me-2"></i>
                     CANCEL ORDER
                   </button>
@@ -140,19 +232,272 @@
             </div>
           </div>
 
+          <!-- confirm cancel order -->
+          <div class="modal fade px-5" tabindex="-1" id="cancelOrder" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header d-flex justify-content-center">
+                  <h5 class="modal-title">Confirm cancel order for 'Table {{ displayOrder.table_id }}'</h5>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                  <button type="button" class="btn btn-danger" style="width: 40%" data-bs-dismiss="modal"
+                    data-bs-target="#tableInfo" @click="cancelOrder()">Yes</button>
+                  <button type="button" class="btn btn-outline-secondary" style="width: 40%"
+                    data-bs-dismiss="modal">No</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- edit menu -->
+          <div class="modal fade" id="editMenu" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title fw-bold">Edit menu</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-4 pb-5">
+                  <div class="col-12 mb-3">
+                    <input class="form-control" type="text" placeholder="Menu Name" v-model="editMenuName"
+                      :class="{'border-danger': editMenuNameErr}" @focus="editMenuNameErr = false">
+                  </div>
+                  <div class="col-12 d-flex">
+                    <div class="col-4 me-3">
+                      <input class="form-control" type="number" placeholder="Menu Price" v-model="editMenuPrice"
+                        :class="{'border-danger': editMenuPriceErr}" @focus="editMenuPriceErr = false">
+                    </div>
+                    <div class="col-4 me-3">
+                      <input class="form-control" type="number" placeholder="Discount" v-model="editMenuDiscount"
+                        :class="{'border-danger': editMenuDiscountErr}" @focus="editMenuDiscountErr = false">
+                    </div>
+                    <div class="col d-flex align-items-center">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" v-model="editMenuStatus">
+                        <label class="form-check-label">
+                          Ready
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn text-light" style="background: #179967" @click="saveEditMenu()"
+                    data-bs-dismiss="modal">Save
+                    changes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- confirm delete menu -->
+          <div class="modal fade px-5" tabindex="-1" id="deleteMenu" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+                <div class="modal-header d-flex justify-content-center">
+                  <h5 class="modal-title">Confirm delete '{{ deleteMenuName.slice(0, 21).trim() }}{{
+                    deleteMenuName.length > 20 ? '...' : '' }}'?</h5>
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                  <button type="button" class="btn btn-danger" style="width: 40%" @click="deleteMenu()"
+                    data-bs-dismiss="modal">Yes</button>
+                  <button type="button" class="btn btn-outline-secondary" style="width: 40%"
+                    data-bs-dismiss="modal">No</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+    </div>
   </body>
 
   <script>
     var app = new Vue({
       el: '#app',
       data: {
-        showTableInfo: false
+        tables: [],
+        displayOrder: [],
+        displayOrderItem: [],
+        customerName: '',
+        menus: [],
+        showTableInfo: false,
+        showTables: true,
+        sortBy: 'recent',
+        newMenuName: '',
+        newMenuPrice: '',
+        newMenuDiscount: '',
+        newMenuNameErr: false,
+        newMenuPriceErr: false,
+        newMenuDiscountErr: false,
+        editMenuId: '',
+        editMenuName: '',
+        editMenuPrice: '',
+        editMenuDiscount: '',
+        editMenuStatus: '',
+        editMenuNameErr: false,
+        editMenuPriceErr: false,
+        editMenuDiscountErr: false,
+        deleteMenuId: '',
+        deleteMenuName: ''
       },
       methods: {
+        getColor(status) {
+          if (status === 'created') {
+            return '#176b99'
+          } else if (status === 'pending') {
+            return '#ffa723'
+          } else if (status === 'served') {
+            return '#179967'
+          } else if (status === undefined) {
+            return '#748092'
+          }
+        },
+        getInfo(table) {
+          if (table.order_id === undefined) {
+            return
+          }
+          fetch(`/order/${table.order_id}`, { method: 'GET' })
+            .then(res => res.json())
+            .then(data => {
+              this.displayOrder = table
+              this.displayOrderItem = data.orderItem
+              this.customerName = data.customerName
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        serveOrder() {
+          fetch(`/order/${this.displayOrder.order_id}/serve`, { method: 'PUT' })
+            .then(res => res.json())
+            .then(data => {
+              this.displayOrder.status = data.status
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        cancelOrder() {
+          fetch(`/order/${this.displayOrder.order_id}/${this.displayOrder.table_id}/cancel`, { method: 'PUT' })
+            .then(res => res.text())
+            .then(data => {
+              window.location.reload()
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        addNewMenu() {
+          this.newMenuName = this.newMenuName.trim()
+          this.newMenuPrice = parseFloat(this.newMenuPrice)
+          this.newMenuDiscount = parseFloat(this.newMenuDiscount)
+
+          this.newMenuNameErr = this.newMenuName === ''
+          this.newMenuPriceErr = isNaN(this.newMenuPrice) || this.newMenuPrice <= 0
+          this.newMenuDiscountErr = this.newMenuDiscount <= 0
+
+          if (!this.newMenuNameErr && !this.newMenuPriceErr && !this.newMenuDiscountErr) {
+            var menuName = this.newMenuName
+            var menuPrice = this.newMenuPrice
+            var memberPrice = isNaN(this.newMenuDiscount) ? this.newMenuPrice : this.newMenuDiscount
+
+            var data = {
+              menu_name: menuName,
+              menu_price: menuPrice,
+              member_price: memberPrice
+            }
+
+            fetch(`/menu?data=${JSON.stringify(data)}`, { method: 'POST' })
+              .then(res => res.json())
+              .then(data => {
+                this.menus.push(data)
+                this.newMenuName = ''
+                this.newMenuPrice = ''
+                this.newMenuDiscount = ''
+              })
+              .catch(err => {
+                console.log(err)
+              })
+          }
+        },
+        editMenu(menu) {
+          this.editMenuId = menu.menu_id
+          this.editMenuName = menu.menu_name
+          this.editMenuPrice = menu.menu_price
+          this.editMenuDiscount = menu.menu_price === menu.member_price ? '' : menu.member_price
+          this.editMenuStatus = menu.menu_status === 'ready'
+        },
+        saveEditMenu() {
+          this.editMenuName = this.editMenuName.trim()
+          this.editMenuPrice = parseFloat(this.editMenuPrice)
+          this.editMenuDiscount = parseFloat(this.editMenuDiscount)
+
+          this.editMenuNameErr = this.editMenuName === ''
+          this.editMenuPriceErr = isNaN(this.editMenuPrice) || this.editMenuPrice <= 0
+          this.editMenuDiscountErr = this.editMenuDiscount <= 0
+
+          if (!this.editMenuNameErr && !this.editMenuPriceErr && !this.editMenuDiscountErr) {
+            var menuId = this.editMenuId
+            var menuName = this.editMenuName
+            var menuPrice = this.editMenuPrice
+            var memberPrice = isNaN(this.editMenuDiscount) ? this.editMenuPrice : this.editMenuDiscount
+            var menuStatus = this.editMenuStatus ? 'ready' : 'not_ready'
+
+            var data = {
+              menu_name: menuName,
+              menu_price: menuPrice,
+              member_price: memberPrice,
+              menu_status: menuStatus
+            }
+
+            fetch(`/menu/${menuId}?data=${JSON.stringify(data)}`, { method: 'PUT' })
+              .then(res => res.json())
+              .then(data => {
+                var targetMenu = this.menus.find(val => val.menu_id === menuId)
+                targetMenu.menu_name = data.menu_name
+                targetMenu.menu_price = data.menu_price
+                targetMenu.member_price = data.member_price
+                targetMenu.menu_status = data.menu_status
+              })
+              .catch(err => {
+                console.log(err)
+              })
+          }
+        },
+        deleteMenu() {
+          fetch(`/menu/${this.deleteMenuId}`, { method: 'DELETE' })
+            .then(res => res.text())
+            .then(data => {
+              var targetIndex = this.menus.findIndex(val => val.menu_id === this.deleteMenuId)
+              this.menus.splice(targetIndex, 1)
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      },
+      computed: {
+        sortedMenus() {
+          var menus = this.menus.concat([])
+          if (this.sortBy === 'recent') {
+            return menus.sort((a, b) => a.menu_id > b.menu_id ? -1 : 1)
+          } else if (this.sortBy === 'alphabetAsc') {
+            return menus.sort((a, b) => a.menu_name < b.menu_name ? -1 : 1)
+          } else if (this.sortBy === 'alphabetDesc') {
+            return menus.sort((a, b) => a.menu_name > b.menu_name ? -1 : 1)
+          } else if (this.sortBy === 'priceAsc') {
+            return menus.sort((a, b) => a.menu_price < b.menu_price ? -1 : 1)
+          } else if (this.sortBy === 'priceDesc') {
+            return menus.sort((a, b) => a.menu_price > b.menu_price ? -1 : 1)
+          }
+        }
       },
       created() {
+        this.tables = JSON.parse(`<%- tables %>`)
+        this.menus = JSON.parse(`<%- menus %>`)
+
         document.getElementById('main').style.minHeight = window.innerHeight + 'px'
         document.getElementById('main').style.maxHeight = window.innerHeight + 'px'
 

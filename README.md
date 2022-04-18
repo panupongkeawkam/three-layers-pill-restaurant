@@ -11,4 +11,4 @@
 > Path Access
 * ลิงค์สำหรับโต๊ะ 1, 2, ... (ลูกค้า): [http://localhost:3000/table/1/home](http://localhost:3000/table/1/home), [http://localhost:3000/table/2/home](http://localhost:3000/table/2/home), [http://localhost:3000/table/.../home](http://localhost:3000/table/.../home) <br>
 
-* ลิงค์สำหรับเข้าสู่ระบบ (พนักงาน): [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+* ลิงค์สำหรับเข้าสู่ระบบ (พนักงาน): [http://localhost:3000/admin/login](http://localhost:3000/admin/login) *(ชื่อผู้ใช้และรหัสผ่านดูใน `routes/employee.js:12, 13`)*

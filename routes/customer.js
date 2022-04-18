@@ -153,6 +153,10 @@ router.get('/table/:no/check-bill', async (req, res) => {
   })
 })
 
+router.get('/completed', async (req, res) => {
+  res.render('customer/complete')
+})
+
 // add new item into order
 router.post('/order/:orderId', async (req, res) => {
   var menu = JSON.parse(req.query.menu)
@@ -306,6 +310,20 @@ router.post('/table/:no/check-bill', async (req, res) => {
   )
 
   res.status(204).send('success')
+})
+
+// pay and complete order
+router.post('/order/:orderId/:tableId/pay', async (req, res) => {
+  const [rows1, fields1] = await pool.query(
+    `UPDATE \`order\`
+    SET \`status\` = ?, check_out = NOW()
+    WHERE order_id = ?`,
+    ['completed', req.params.orderId]
+  )
+
+  await SQL.setTableStatus(req.params.tableId, 'ready')
+
+  res.send('success')
 })
 
 exports.router = router

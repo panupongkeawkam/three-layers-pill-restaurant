@@ -12,11 +12,11 @@
           <h1 class="fw-bold mb-2" style="color: #991728; white-space: nowrap;">Restaurant Manager</h1>
           <p class="mb-5" style="font-size: .8em">contact us <a class="text"
               style="color: #ffa723">three_layers_pils@gmail.co.th</a></p>
-          <form action="/admin/tables" method="POST" class="w-100 needs-validation" name="login">
+          <form action="/admin/login" method="POST" class="w-100 needs-validation" name="login">
             <input class="form-control ps-4 py-3 rounded-pill mb-4" :class="{'border-danger text-danger': error}"
-              type="text" placeholder="Username (To login use 'inwza')" name="username" v-model="username" required>
+              type="text" placeholder="Username" name="username" @focus="error = false" required>
             <input class="form-control ps-4 py-3 rounded-pill mb-5" :class="{'border-danger text-danger': error}"
-              type="password" placeholder="Password (To login use '007')" name="password" v-model="password" required>
+              type="password" placeholder="Password" name="password" @focus="error = false" required>
             <div class="input-group mb-5 d-flex justify-content-center">
               <input class="btn text-light px-5 py-3 fw-bold rounded-pill" style="background: #991728" type="submit" value="LOGIN">
             </div>
@@ -30,8 +30,6 @@
     var app = new Vue({
       el: '#app',
       data: {
-        username: '',
-        password: '',
         error: JSON.parse(`<%- error %>`)
       },
       created() {
