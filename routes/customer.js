@@ -224,7 +224,6 @@ router.put('/order/:orderId/:itemNo/decrease', async (req, res) => {
   res.status(204).send('success')
 })
 
-
 // increase amount of item in order
 router.put('/order/:orderId/:itemNo/increase', async (req, res) => {
   const [rows, fields] = await pool.query(

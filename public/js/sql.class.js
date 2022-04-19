@@ -15,9 +15,9 @@ class SQL {
 
   static async getMenus() {
     const [menus, menusFields] = await pool.query(
-      `SELECT menu_id, menu_name, menu_price, member_price
+      `SELECT *
       FROM menu
-      WHERE menu_status = 'ready'`
+      WHERE menu_status IS NOT NULL`
     )
     return menus
   }

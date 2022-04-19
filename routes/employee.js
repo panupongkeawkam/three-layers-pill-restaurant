@@ -10,7 +10,7 @@ router.get('/admin/login', async (req, res) => {
 
 router.post('/admin/login', async (req, res) => {
   var username = req.body.username.trim() // Somkuan_Narok
-   var password = req.body.password.trim() // Narok3476
+  var password = req.body.password.trim() // Narok3476
 
   const [rows1, fields1] = await pool.query(
     `SELECT employee_id, fname, lname
@@ -40,10 +40,7 @@ router.get('/admin/tables', async (req, res) => {
     WHERE \`status\` != 'completed'`
   )
 
-  const [menus, fields3] = await pool.query(
-    `SELECT *
-    FROM menu`
-  )
+  var menus = await SQL.getMenus()
 
   var data = []
   for (var table of tables) {
@@ -165,7 +162,8 @@ router.put('/menu/:menuId', async (req, res) => {
 
 router.delete('/menu/:menuId', async (req, res) => {
   const [rows1, fields1] = await pool.query(
-    `DELETE FROM menu
+    `UPDATE menu
+    SET menu_status = NULL
     WHERE menu_id = ?`,
     [req.params.menuId]
   )

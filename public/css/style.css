@@ -15,7 +15,6 @@ body {
 .number-notification {
   position: absolute;
   font-size: 10px;
-  /* background: #de132a; */
   background: #0075ff;
   color: white;
   width: 20px;

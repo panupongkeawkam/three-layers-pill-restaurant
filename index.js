@@ -1,26 +1,16 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
-const cors = require('cors')
 
 app.set('view engine', 'ejs')
 
 app.use(express.static('public'))
-app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false}));
 
 const customerRouter = require('./routes/customer')
 const employeeRouter = require('./routes/employee')
 app.use(customerRouter.router)
 app.use(employeeRouter.router)
-
-// String.prototype.toUnicode = function () {
-//   var result = '';
-//   for (var i = 0; i < this.length; i++) {
-//     result += "\\u" + ("000" + this[i].charCodeAt(0).toString(16)).substr(-4);
-//   }
-//   return result;
-// };
 
 app.listen(3000, () => {
   console.log(`Server running at http://localhost:3000`)

@@ -23,7 +23,7 @@
 
       <!-- menu list -->
       <div class="row py-3 px-2 border-bottom"
-        v-for="menu in menus.filter(val => val.menu_name.toLowerCase().includes(searchQuery.toLowerCase()))">
+        v-for="menu in menus.filter(val => val.menu_status === 'ready' && val.menu_name.toLowerCase().includes(searchQuery.toLowerCase()))">
         <div class="col-8">
           <span>{{ menu.menu_name }}</span>
         </div>
